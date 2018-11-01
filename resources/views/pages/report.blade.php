@@ -4,9 +4,16 @@
 Report A Problem
 @endsection
 
-@section('content')
+@section('head')
+	<link rel="stylesheet" href="{{ asset('css/report.css') }}" rel="stylesheet" />
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyAkJsq7Ax0jlg8FVJrMYDUaNsmOJi0_wTo"></script>
+	<script src="{{ asset('js/report.js') }}"></script>
+@endsection
+
+@section('body')
 <div id="problemReport">
-    <h2>Suggest changes for XXX</h2>
+    <h2>Suggest changes for {{ $hotel->name }}</h2>
     <p>Is something not right? Please give us as much information you can on what's wrong.</p>
     <div class="comment-checkbox-container"><input type="checkbox" id="xne" value="xne" class="comment-checkbox"><label for="xne">This property doesn't exist</label></div>
     <div class="comment-box-container"><textarea class="comment-box" id="bne" placeholder="Please tell us if this property was closed and, if applicable, the name of the property currently at this location. If this property has moved, please tell us the new location." rows="3"></textarea></div>
@@ -53,23 +60,17 @@ Report A Problem
     </div>
     <div class="property-container">
         <div class="property-header">Category &amp; Points</div>
-        <div class=""><?php echo ($thisbrandarray["categorynames"][$i] ? $thisbrandarray["categorynames"][$category - 1] : 'Category ' . $category ) ?>, <?php echo $points ?> points</div>
+        <div class="">{{ $hotel->category->name }}, {{ $hotel->category->points }} points</div>
     </div>
     <div class="property-expand">
-   		<div class="property-header">Category & Points</div>
+   		<div class="property-header">Category &amp; Points</div>
 		<select id="ncat">
-        <?php 
-			foreach ( $thisbrandarray["categories"] as $key=>$eachcategory) {
-				if ( $eachcategory == $category ) {
-					echo '<option value="'. $eachcategory .'" selected>'. ($thisbrandarray["categorynames"][$i] ? $thisbrandarray["categorynames"][$key] : 'Category ' . $eachcategory ) .'</option>';
-				} else {
-					echo '<option value="'. $eachcategory .'">'. ($thisbrandarray["categorynames"][$i] ? $thisbrandarray["categorynames"][$key] : 'Category ' . $eachcategory ) .'</option>';
-				}
-			}
-		 ?>
+@foreach ($hotel->brand->categories as $category)
+			<option value="{{ $category->id }}"{{ $category->id == $hotel->category_id ? 'selected="selected"' : '' }} />{{ $category->name }}</option>
+@endforeach
 		</select>
         <label for="npo">Points</label>
-		<input type="text" class="small-input" id="npo" value="{{ $hotel->points }}">
+		<input type="text" class="small-input" id="npo" value="{{ $hotel->category->points }}">
     </div>
     <div class="property-container">
         <div class="property-header">Brand</div>
@@ -79,27 +80,15 @@ Report A Problem
     	<div class="property-header">Brand</div>
 		<label for="nbr">Brand</label>
         <select id="nbr">
-        <?php 
-			foreach ( $hotel_properties as $eachbrand) {
-				if ( $eachbrand["brand"][1] == $brand ) {
-					echo '<option value="'. $eachbrand["brand"][0] .'" selected>'.$eachbrand["brand"][1] .'</option>';
-				} else {
-					echo '<option value="'. $eachbrand["brand"][0] .'">'.$eachbrand["brand"][1] .'</option>';
-				}
-			}
-		 ?>
+@foreach ($brands as $brand)
+			<option value="{{ $brand->id }}"{{ $brand->id == $hotel->brand_id ? 'selected="selected"' : '' }} />{{ $brand->name }}</option>
+@endforeach
 		</select>
         <label for="nsub">Sub-brand</label>
 		<select id="nsub">
-        <?php 
-			foreach ( $thisbrandarray["subbrands"] as $key=>$eachsubbrand) {
-				if ( $eachsubbrand == $subbrand ) {
-					echo '<option value="'. $thisbrandarray["subbrandsshort"][$key] .'" selected>'. $thisbrandarray["subbrands"][$key] .'</option>';
-				} else {
-					echo '<option value="'. $thisbrandarray["subbrandsshort"][$key] .'">'. $thisbrandarray["subbrands"][$key] .'</option>';
-				}
-			}
-		 ?>
+@foreach ($hotel->brand->subbrands as $subbrand)
+			<option value="{{ $subbrand->id }}"{{ $subbrand->id == $hotel->subbrand_id ? 'selected="selected"' : '' }} />{{ $subbrand->name }}</option>
+@endforeach
 		</select>
     </div>
     <div class="submit-container">

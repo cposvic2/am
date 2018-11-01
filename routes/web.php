@@ -15,6 +15,4 @@ Route::get('/', function () {
     return view('pages.home');
 });
 
-Route::get('/report', function () {
-    return view('pages.home');
-});
+Route::get('report/{id}', 'HotelController@report');

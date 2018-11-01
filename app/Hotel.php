@@ -13,4 +13,8 @@ class Hotel extends Model
     public function subbrand() {
         return $this->belongsTo('App\Subbrand', 'subbrand_id');
     }
+
+    public function category() {
+        return $this->belongsTo('App\Category', 'category_id');
+    }
 }

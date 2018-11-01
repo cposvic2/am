@@ -5,7 +5,7 @@ Awardomatic
 @endsection
 
 @section('head')
-	<link rel="stylesheet" href="{{ asset('css/style.css') }}" rel="stylesheet" />
+	<link rel="stylesheet" href="{{ asset('css/home.css') }}" rel="stylesheet" />
 	<link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}" rel="stylesheet" />
 	<link rel="stylesheet" href="{{ asset('css/absolution.css') }}" rel="stylesheet" />
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -13,7 +13,7 @@ Awardomatic
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyAkJsq7Ax0jlg8FVJrMYDUaNsmOJi0_wTo"></script>
 	<script src="{{ asset('js/jquery.ui.touch-punch.min.js') }}"></script>
 	<script src="{{ asset('js/jquery.cookie.js') }}"></script>
-	<script src="{{ asset('js/functions.js') }}"></script>
+	<script src="{{ asset('js/home.js') }}"></script>
 @endsection
 
 @section('body')

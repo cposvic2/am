@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateHotelsTable extends Migration
+class CreateCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,12 @@ class CreateHotelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('hotels', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->increments('id');
             $table->text('name');
-            $table->text('address');
-            $table->float('latitude');
-            $table->float('longitude');
-            $table->text('link');
+            $table->integer('order');
+            $table->integer('points')->nullable();
             $table->integer('brand_id');
-            $table->integer('subbrand_id');
-            $table->integer('category_id');
             $table->timestamps();
         });
     }
@@ -34,6 +30,6 @@ class CreateHotelsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('hotels');
+        Schema::dropIfExists('categories');
     }
 }

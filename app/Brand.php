@@ -10,6 +10,10 @@ class Brand extends Model
         return $this->hasMany('App\Subbrand');
     }
 
+    public function categories() {
+        return $this->hasMany('App\Category');
+    }
+
     public function hotels() {
         return $this->hasMany('App\Hotel');
     }
