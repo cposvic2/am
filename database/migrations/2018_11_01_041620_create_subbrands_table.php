@@ -15,6 +15,9 @@ class CreateSubbrandsTable extends Migration
     {
         Schema::create('subbrands', function (Blueprint $table) {
             $table->increments('id');
+            $table->text('name');
+            $table->integer('order');
+            $table->integer('brand_id');
             $table->timestamps();
         });
     }
