@@ -44,37 +44,38 @@ a:hover {
 
 .brand {
 	color: white;
+	background-color: #aaa;
 }
 
-.brand-clubcarlson {
+.brand-1 {
 	background-color: #555;
 }
 
-.brand-ihg {
+.brand-4 {
 	background-color: #4c9c2f;
 }
 
-.brand-marriott {
+.brand-5 {
 	background-color: #b8241f;
 }
 
-.brand-hyatt {
+.brand-3 {
 	background-color: #4a7fa1;
 }
 
-.brand-hilton {
+.brand-2 {
 	background-color: #a38636;
 }
 
-.brand-starwood {
+.brand-6 {
 	background-color: #6152c7;
 }
 
-.brand-wyndham {
+.brand-7 {
 	background-color: #0074be;
 }
 
-.brand-choice {
+.brand-8 {
 	background-color: #e26811;
 }
 

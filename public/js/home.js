@@ -1,3 +1,4 @@
+var brands = [];
 var map;
 var ProblemMap;
 
@@ -27,34 +28,45 @@ function UpdatePositions() {
 }
 
 function InitializeMarkers() {
-	for (var brand in hotel_list) {
-		if (hotel_list.hasOwnProperty(brand)) {
-			var i = hotel_list[brand].length;
-			while (i--) {
-				if (typeof hotel_brands[brand]['categories'][hotel_list[brand][i][2]] != 'undefined' ) {
-					var points = hotel_brands[brand]['categories'][hotel_list[brand][i][2]]['points'];
-				} else {
+	for (var brand_id in hotel_list) {
+		var brand = brands.find(x => x.id == brand_id);
+		for (var subbrand_id in hotel_list[brand_id]) {
+			for (var category_id in hotel_list[brand_id][subbrand_id]) {
+				category = brand.categories.find(x => x.id == category_id);
+				var i = hotel_list[brand_id][subbrand_id][category_id].length;
+				while (i--) {
 					var points = null;
+					if (!category) {
+						points = category.points;
+					}
+					CreateMarker({
+						'id': hotel_list[brand_id][subbrand_id][category_id][i][0],
+						'lat': hotel_list[brand_id][subbrand_id][category_id][i][1],
+						'long': hotel_list[brand_id][subbrand_id][category_id][i][2],
+						'brand_id': category_id,
+						'subbrand_id': subbrand_id,
+						'category_id': category_id,
+						'points': category_id,
+					});
 				}
-				CreateMarker(hotel_list[brand][i][0], hotel_list[brand][i][1], hotel_list[brand][i][2], points, brand, hotel_list[brand][i][3], hotel_list[brand][i][4]);
 			}
 		}
-	}	
+	}
 
 	hotel_list = null;
 }
 
-function CreateMarker(lat, long, cat, points, brand, subbrand, id) {
+function CreateMarker(attrs) {
 	var i = markers.length;
 	markers[i] = (new google.maps.Marker({
-		position: new google.maps.LatLng(lat, long),
-		category: cat,
-		pointsamount: points,
-		brand: brand,
-		subbrand: subbrand,
-		id: id,
-		//map: map,
-		icon: markerImages[brand],
+		position: new google.maps.LatLng(attrs['lat'], attrs['long']),
+		category: attrs['category_id'],
+		pointsamount: attrs['points'],
+		brand: attrs['brand_id'],
+		subbrand: attrs['subbrand_id'],
+		id: attrs['id'],
+		map: map,
+		//icon: markerImages[attrs['brand_id']],
 		draggable: false,
 	}));
 	
@@ -67,40 +79,18 @@ function MarkerClick(marker) {
 	var id = marker.id;
 	console.log(id);
 	$.ajax({
-		url: "infoboxquery",
+		url: "infobox/"+id,
 		dataType: 'json',
-		data: {"id":id},
 		timeout: 0,
 		error: function(jqXHR, textStatus, errorThrown) {
 			console.log(textStatus);
 		}
 	})
 	.done(function( json ) {
-		var infoboxhotel = json["results"]["hotel"];
-		var brand = infoboxhotel["br"];
-		var category = infoboxhotel["ca"];
-		
-		if (typeof hotel_brands[brand]['categories'][category]['label'] != 'undefined' ) {
-			var categorytoshow = hotel_brands[brand]['categories'][category]['label'];
-		} else {
-			var categorytoshow = "Category " + category;
+		if (json["success"]) {
+			infowindow.setContent(json["view"]);
+			infowindow.open(map,marker);
 		}
-
-		if (typeof hotel_brands[brand]['categories'][category]['points'] != 'undefined' ) {
-			var points = hotel_brands[infoboxhotel["br"]]['categories'][category]['points'];
-			var pointstype = hotel_brands[infoboxhotel["br"]]['brand'][1];
-			var pointstext = ', '+points+' '+pointstype;
-		} else {
-			var pointstext = '';
-		}
-
-		var action = "ga('send', 'event', 'Awardomatic', 'Link Clicked - "+brand+"')";
-
-		var contentString = '<div class="noscrollbar"><h3 id="firstHeading" class="firstHeading"><a style="display:inline !important;" href="'+infoboxhotel["li"]+'" target="_blank" onclick="'+action+'", "'+infoboxhotel["na"]+'"]);">'+infoboxhotel["na"]+'</a></h3>';
-		contentString += '<div id="bodyContent"><p>'+infoboxhotel["ad"]+'</p><p>'+categorytoshow+pointstext+'<span><a class="problem-report-link" href="report?id='+id+'" target="_blank">Not right?</a></span></p></div></div>';
-
-		infowindow.setContent(contentString);
-		infowindow.open(map,marker);
 	});
 }
 
@@ -116,56 +106,27 @@ function RemoveMarker(i) {
 	markers[i].setMap(null);
 }
 
-function BrandIsSelected(i) {
-	if (currentpreferences[markers[i].brand][0]) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-function CategoryIsSelected(i) {
-	if (currentpreferences[markers[i].brand][1][markers[i].category - 1]) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-function PointsAreWithinBounds(i) {
-	if ( markers[i].pointsamount == null || (minpoints <= markers[i].pointsamount && maxpoints >= markers[i].pointsamount) ) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-function SubBrandIsSelected(i) {
-	if ( currentpreferences[markers[i].brand][2][markers[i].subbrand] || markers[i].subbrand == null ) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
 function MarkerShouldBeVisible(i) {
-	if ( BrandIsSelected(i) ) {
-		if ( CategoryIsSelected(i) ) {
-			if ( PointsAreWithinBounds(i) ) {
-				if ( SubBrandIsSelected(i) ) {
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				return false
-			}
-		} else {
-			return false
-		}
-	} else {
+	brand = brands.find(x => x.id == markers[i].brand);
+	if (!brand.show) {
 		return false;
 	}
+
+	category = brand.categories.find(x => x.id == markers[i].category);
+	if (!category.show) {
+		return false;
+	}
+
+	subbrand = brand.subbrands.find(x => x.id == markers[i].subbrand);
+	if (!subbrand.show) {
+		return false;
+	}
+
+	if ( markers[i].pointsamount !== null && minpoints > markers[i].pointsamount && maxpoints < markers[i].pointsamount ) {
+		return false;
+	}
+
+	return true;
 }
 
 function displayChecks() {
@@ -189,28 +150,25 @@ function preferencesChanged() {
 }
 
 function collectPreferences() {
-	//collect preferences of hotels
-	currentpreferences = [];
-
-	for (var brand in hotel_brands) {
-		if (hotel_brands.hasOwnProperty(brand)) {
-
-			var brandgroup = [$('div input[name="hotelBrand"][id="'+brand+'"]').prop('checked')];
-			var brandcategories = [];
-			var subbrands = [];
-			
-			$('div input[name="' +brand+ 'category"]').each(function(){
-				brandcategories.push($(this).prop('checked'));
-			});
-			brandgroup.push(brandcategories);
-			
-			$('div input[name="'+brand+'brand"]').each(function(){
-				subbrands[$(this).attr('id')] = $(this).prop('checked');
-			});
-			brandgroup.push(subbrands);
-			currentpreferences[brand] = brandgroup;
-		}
-	}
+	$(".check-brand").each(function() {
+		var brand = new Brand;
+		brand.id = $(this).data("brand");
+		brand.show = $(this).prop('checked');
+		$(".check-category[data-brand='"+brand.id+"']").each(function() {
+			var category = new Category;
+			category.id = $(this).data("category");
+			category.points = $(this).data('points');
+			category.show = $(this).prop('checked');
+			brand.categories.push(category);
+		});
+		$(".check-subbrand[data-brand='"+brand.id+"']").each(function() {
+			var subbrand = new Subbrand;
+			subbrand.id = $(this).data("subbrand");
+			subbrand.show = $(this).prop('checked');
+			brand.subbrands.push(subbrand);
+		});
+		brands.push(brand);
+	});
 
 	if (typeof ga == 'function') { 
 		ga('send', 'event', 'Awardomatic', 'Preferences Changed');
@@ -218,7 +176,9 @@ function collectPreferences() {
 }
 
 $(document).ready(function(){
-	ga('send', 'pageview');
+	if (typeof ga == 'function') { 
+		ga('send', 'pageview');
+	}
 	minpoints = 0;
 	maxpoints = 100000;
 	collectPreferences();
@@ -300,6 +260,7 @@ $(function() {
 });
 
 function initialize() {
+	collectPreferences();
 
 	// get cookies
 
@@ -317,16 +278,14 @@ function initialize() {
 
 	markerImages = [];
 	
-	for (var brand in hotel_brands) {
-		if (hotel_brands.hasOwnProperty(brand)) {
-			markerImages[brand] = {
-				url: "img/marker-sprite-2x.png",
-				size: new google.maps.Size(14, 27),
-				scaledSize: new google.maps.Size(98, 27),
-				origin: new google.maps.Point(hotel_brands[brand]['brand'][2]*14,0),
-				anchor: new google.maps.Point(7, 25)
-			};
-		}
+	for (var brand in brands) {
+		markerImages[brand.id] = {
+			url: "img/marker-sprite-2x.png",
+			size: new google.maps.Size(14, 27),
+			scaledSize: new google.maps.Size(98, 27),
+			origin: new google.maps.Point(brand.id*14,0),
+			anchor: new google.maps.Point(7, 25)
+		};
 	}
 
 	markers = [];

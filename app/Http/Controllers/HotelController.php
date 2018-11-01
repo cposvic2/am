@@ -12,4 +12,15 @@ class HotelController extends Controller
     {
         return view('pages.report', ['hotel' => Hotel::findOrFail($id), 'brands' => Brand::all()]);
     }
+
+
+    public function infobox($id)
+    {
+    	$hotel = Hotel::findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'view' => view('modals.infobox', ['hotel' => $hotel])->render(),
+        ]);
+    }
 }
