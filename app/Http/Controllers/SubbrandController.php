@@ -2,37 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Hotel;
 use App\Brand;
+use App\Subbrand;
 use Illuminate\Http\Request;
 
-class HotelController extends Controller
+class SubbrandController extends Controller
 {
-    public function report($id)
-    {
-        return view('pages.report', ['hotel' => Hotel::findOrFail($id), 'brands' => Brand::all()]);
-    }
-
-    public function infobox($id)
-    {
-    	$hotel = Hotel::findOrFail($id);
-        $brands = Brand::all();
-        return response()->json([
-            'success' => true,
-            'view' => view('modals.infobox', ['hotel' => $hotel, 'brands' => $brands])->render(),
-        ]);
-    }
-
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Brand $brand)
     {
-        $brands = Brand::all();
-        $hotels = Hotel::all();
-        return view('pages.admin.hotels', ['hotels' => $hotels, 'brands' => $brands]);
+        $subbrands = Subbrand::where('brand_id', $brand->id)->get();
+        return view('pages.admin.subbrands', ['subbrands' => $subbrands, 'brand' => $brand]);
     }
 
     /**
@@ -45,7 +29,7 @@ class HotelController extends Controller
         $brands = Brand::all();
         return response()->json([
             'success' => true,
-            'view' => view('modals.hotel', ['brands' => $brands])->render(),
+            'view' => view('modals.category', ['brands' => $brands, 'category'])->render(),
         ]);
     }
 
@@ -77,12 +61,12 @@ class HotelController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Hotel $hotel)
+    public function edit(Brand $brand, Subbrand $subbrand)
     {
         $brands = Brand::all();
         return response()->json([
             'success' => true,
-            'view' => view('modals.hotel', ['brands' => $brands, 'hotel' => $hotel])->render(),
+            'view' => view('modals.subbrand', ['brands' => $brands, 'subbrand' => $subbrand])->render(),
         ]);
     }
 

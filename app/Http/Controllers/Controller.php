@@ -16,4 +16,5 @@ class Controller extends BaseController
     {
         return view('pages.home', ['brands' => Brand::orderBy('order')->get()]);
     }
+    
 }
