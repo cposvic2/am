@@ -4,13 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Hotel;
 use App\Brand;
+use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 
 class HotelController extends Controller
 {
     public function report($id)
     {
-        return view('pages.report', ['hotel' => Hotel::findOrFail($id), 'brands' => Brand::all()]);
+        $hotel = Hotel::findOrFail($id);
+        $brands = Brand::all();
+        return view('pages.report', compact('brands', 'hotel'));
     }
 
     public function infobox($id)
@@ -19,7 +23,7 @@ class HotelController extends Controller
         $brands = Brand::all();
         return response()->json([
             'success' => true,
-            'view' => view('modals.infobox', ['hotel' => $hotel, 'brands' => $brands])->render(),
+            'view' => view('modals.infobox', compact('hotel', 'brands'))->render(),
         ]);
     }
 
@@ -30,9 +34,28 @@ class HotelController extends Controller
      */
     public function index()
     {
+        $query = Hotel::query();
+
+        $querystringArray = Input::only(['brand','subbrand','category','search']);
+
+        if (Input::get('brand', '') != '') {
+            $query->where('brand_id', Input::get('brand'));
+        }
+        if (Input::get('subbrand', '') != '') {
+            $query->where('subbrand_id', Input::get('subbrand'));
+        }
+        if (Input::get('category', '') != '') {
+            $query->where('category_id', Input::get('category'));
+        }
+        if (Input::get('search', '') != '') {
+            $query->where('name', 'like', '%'.Input::get('search').'%');
+        }
+        $hotels = $query->paginate(20);
         $brands = Brand::all();
-        $hotels = Hotel::all();
-        return view('pages.admin.hotels', ['hotels' => $hotels, 'brands' => $brands]);
+
+        $hotels->appends($querystringArray);
+
+        return view('pages.admin.hotels', compact('hotels', 'brands'));
     }
 
     /**
@@ -45,7 +68,7 @@ class HotelController extends Controller
         $brands = Brand::all();
         return response()->json([
             'success' => true,
-            'view' => view('modals.hotel', ['brands' => $brands])->render(),
+            'view' => view('modals.hotel', compact('brands'))->render(),
         ]);
     }
 
@@ -57,7 +80,21 @@ class HotelController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $hotel = new Hotel;
+
+        $hotel->brand_id = $request->input('brand');
+        $hotel->subbrand_id = $request->input('subbrand');
+        $hotel->category_id = $request->input('category');
+
+        $hotel->name = $request->input('name');
+        $hotel->address = $request->input('address');
+        $hotel->link = $request->input('link');
+
+        $hotel->latitude = $request->input('latitude');
+        $hotel->longitude = $request->input('longitude');
+        $hotel->save();
+
+        return redirect(url("/admin/hotels"))->withSuccess($hotel->name." has been added successfully");
     }
 
     /**
@@ -82,7 +119,7 @@ class HotelController extends Controller
         $brands = Brand::all();
         return response()->json([
             'success' => true,
-            'view' => view('modals.hotel', ['brands' => $brands, 'hotel' => $hotel])->render(),
+            'view' => view('modals.hotel', compact('brands', 'hotel'))->render(),
         ]);
     }
 
@@ -93,9 +130,21 @@ class HotelController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Hotel $hotel)
     {
-        //
+        $hotel->brand_id = $request->input('brand');
+        $hotel->subbrand_id = $request->input('subbrand');
+        $hotel->category_id = $request->input('category');
+
+        $hotel->name = $request->input('name');
+        $hotel->address = $request->input('address');
+        $hotel->link = $request->input('link');
+
+        $hotel->latitude = $request->input('latitude');
+        $hotel->longitude = $request->input('longitude');
+        $hotel->save();
+
+        return redirect(url("/admin/hotels"))->withSuccess($hotel->name." has been updated successfully");
     }
 
     /**

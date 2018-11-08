@@ -18,10 +18,15 @@ Route::get('/', function () {
 Route::get('/', 'Controller@home');
 
 Route::get('report/{id}', 'HotelController@report');
-
 Route::get('infobox/{id}', 'HotelController@infobox');
 
 Route::resource('admin/hotels', 'HotelController', ['only' => ['update', 'edit', 'store', 'destroy', 'index'] ]);
 Route::resource('admin/brands', 'BrandController', ['only' => ['update', 'edit', 'store', 'destroy', 'index'] ]);
 Route::resource('admin/brands.subbrands', 'SubbrandController', ['only' => ['create', 'update', 'edit', 'store', 'destroy', 'index'] ]);
 Route::resource('admin/brands.categories', 'CategoryController', ['only' => ['create', 'update', 'edit', 'store', 'destroy', 'index'] ]);
+
+Route::get('admin/ajax/select', 'AjaxController@select'); 
+Route::get('admin/regenerate', 'Controller@regenerate');
+Route::get('admin', function () {
+    return view('pages.admin.overview');
+});

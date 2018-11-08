@@ -16,7 +16,7 @@ class SubbrandController extends Controller
     public function index(Brand $brand)
     {
         $subbrands = Subbrand::where('brand_id', $brand->id)->get();
-        return view('pages.admin.subbrands', ['subbrands' => $subbrands, 'brand' => $brand]);
+        return view('pages.admin.subbrands', compact('subbrands', 'brand'));
     }
 
     /**
@@ -29,7 +29,7 @@ class SubbrandController extends Controller
         $brands = Brand::all();
         return response()->json([
             'success' => true,
-            'view' => view('modals.category', ['brands' => $brands, 'category'])->render(),
+            'view' => view('modals.category', compact('brands'))->render(),
         ]);
     }
 
@@ -39,9 +39,15 @@ class SubbrandController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Brand $brand)
     {
-        //
+        $subbrand = new Subbrand;
+        $subbrand->brand_id = $brand->id;
+        $subbrand->name = $request->input('name');
+        $subbrand->order = $request->input('order');
+        $subbrand->save();
+
+        return redirect(url("/admin/brands/{$brand->id}/subbrands"))->withSuccess($subbrand->name." has been added successfully");
     }
 
     /**
@@ -66,7 +72,7 @@ class SubbrandController extends Controller
         $brands = Brand::all();
         return response()->json([
             'success' => true,
-            'view' => view('modals.subbrand', ['brands' => $brands, 'subbrand' => $subbrand])->render(),
+            'view' => view('modals.subbrand', compact('brands', 'subbrand'))->render(),
         ]);
     }
 
@@ -77,9 +83,13 @@ class SubbrandController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Brand $brand, Subbrand $subbrand)
     {
-        //
+        $subbrand->name = $request->input('name');
+        $subbrand->order = $request->input('order');
+        $subbrand->save();
+
+        return redirect(url("/admin/brands/{$brand->id}/subbrands"))->withSuccess($subbrand->name." has been updated successfully");
     }
 
     /**

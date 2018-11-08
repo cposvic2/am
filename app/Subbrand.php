@@ -14,4 +14,5 @@ class Subbrand extends Model
         return $this->hasMany('App\Hotel');
     }
 
+    protected $visible = ['id', 'name'];
 }

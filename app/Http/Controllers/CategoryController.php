@@ -16,7 +16,7 @@ class CategoryController extends Controller
     public function index(Brand $brand)
     {
         $categories = Category::where('brand_id', $brand->id)->get();
-        return view('pages.admin.categories', ['categories' => $categories, 'brand' => $brand]);
+        return view('pages.admin.categories',  compact('categories', 'brand'));
     }
 
     /**
@@ -29,7 +29,7 @@ class CategoryController extends Controller
         $brands = Brand::all();
         return response()->json([
             'success' => true,
-            'view' => view('modals.category', ['brands' => $brands, 'category'])->render(),
+            'view' => view('modals.category', compact('brands'))->render(),
         ]);
     }
 
@@ -39,9 +39,16 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Brand $brand)
     {
-        //
+        $category = new Category;
+        $category->brand_id = $brand->id;
+        $category->name = $request->input('name');
+        $category->order = $request->input('order');
+        $category->points = $request->input('points');
+        $category->save();
+
+        return redirect(url("/admin/brands/{$brand->id}/categories"))->withSuccess($category->name." has been added successfully");
     }
 
     /**
@@ -66,7 +73,7 @@ class CategoryController extends Controller
         $brands = Brand::all();
         return response()->json([
             'success' => true,
-            'view' => view('modals.category', ['brands' => $brands, 'category' => $category])->render(),
+            'view' => view('modals.category', compact('brands', 'category'))->render(),
         ]);
     }
 
@@ -77,9 +84,14 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Brand $brand, Category $category)
     {
-        //
+        $category->name = $request->input('name');
+        $category->order = $request->input('order');
+        $category->points = $request->input('points');
+        $category->save();
+
+        return redirect(url("/admin/brands/{$brand->id}/categories"))->withSuccess($category->name." has been updated successfully");
     }
 
     /**

@@ -9,6 +9,39 @@ Hotels
 
 @section('content')
 <h1>Hotels</h1>
+<div class="pb-3">
+	<p><button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#searchForm" aria-expanded="false" aria-controls="searchForm">Show Search</button></p>
+	<div class="collapse" id="searchForm">
+		<form action="{{ url("/admin/hotels") }}" method="get">
+			<div class="form-group">
+				<label for="name">Search</label>
+				<input type="text" class="form-control" name="search" id="search" placeholder="Search" value="">
+			</div>
+			<div class="form-row">
+				<div class="form-group col-md-4">
+					<label class="col-form-label">Brand</label>
+				    <select class="form-control ajax-changer" id="search-hotel" name="brand" id="brand">
+				    	@component('components.options', ['things' => $brands])@endcomponent
+				    </select>
+				</div>
+				<div class="form-group col-md-4">
+					<label class="col-form-label">Subbrand</label>
+				    <select class="form-control ajax-change" name="subbrand" id="subbrand" data-action="subbrand" data-target="#search-hotel">
+				    	@component('components.options', ['things' => $brands->first()->subbrands])@endcomponent
+				    </select>
+				</div>
+				<div class="form-group col-md-4">
+					<label class="col-form-label">Category</label>
+				    <select class="form-control ajax-change" name="category" id="category" data-action="category" data-target="#search-hotel">
+				    	@component('components.options', ['things' => $brands->first()->categories])@endcomponent
+				    </select>
+				</div>
+			</div>
+			<button type="submit" class="btn btn-primary">Search</button>
+		</form>
+	</div>
+</div>
+<p>Showing {{ $hotels->firstItem() }}-{{ $hotels->lastItem() }} of {{ $hotels->total() }} hotels:</p>
 <div class="table-responsive">
 	<table class="table">
 		<thead class="thead-light">
@@ -37,9 +70,10 @@ Hotels
 		</tbody>
 	</table>
 </div>
+{{ $hotels->links() }}
 
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addHotelModal">Add Hotel</button>
-<button type="button" class="btn btn-primary" id="regenerate-hotels" >Regenerate Hotel List</button>
+<a role="button" class="btn btn-primary" id="regenerate-hotels" href="{{ url("/admin/regenerate") }}">Regenerate Hotel List</a>
 
 <div class="modal fade" id="addHotelModal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-dialog-centered" role="document">

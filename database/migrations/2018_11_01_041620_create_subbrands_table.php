@@ -18,6 +18,7 @@ class CreateSubbrandsTable extends Migration
             $table->text('name');
             $table->integer('order');
             $table->integer('brand_id');
+            $table->text('old_id')->nullable();
             $table->timestamps();
         });
     }

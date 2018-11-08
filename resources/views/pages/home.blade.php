@@ -16,7 +16,7 @@ Awardomatic
 	<script src="{{ asset('js/brand.js') }}"></script>
 	<script src="{{ asset('js/subbrand.js') }}"></script>
 	<script src="{{ asset('js/category.js') }}"></script>
-	<script src="{{ asset('js/home.js') }}"></script>
+	<script src="{{ asset('js/home-new.js') }}"></script>
 @endsection
 
 @section('body')
@@ -34,22 +34,22 @@ Awardomatic
 	@foreach ($brands as $brand)
 		<div class="brand brand-{{ $brand->id }}">
 			<div class="brand-header">
-				<input type="checkbox" class="check-brand" name="brand" id="brand-{{ $brand->id }}" value="{{ $brand->id }}" data-brand="{{ $brand->id }}" checked="checked" />
+				<input type="checkbox" class="check-brand change-preferences" name="brand" id="brand-{{ $brand->id }}" value="{{ $brand->id }}" data-brand="{{ $brand->id }}" checked="checked" />
 				<div class="brand-label">
-					<label for="brand-{{ $brand->id }}">{{ $brand->name }}</label><i class="new-expand fa fa-plus-circle"></i>
+					<label for="brand-{{ $brand->id }}">{{ $brand->name }}</label><i class="brand-expand fa" data-target="brand-{{ $brand->id }}-suboptions"></i>
 				</div>
 			</div>
-			<div class="suboptions">
+			<div class="suboptions brand-{{ $brand->id }}-suboptions">
 				<div class="suboption-section suboption-categories">
-					<div class="suboption-input"><input type="checkbox" name="all-selector" id="brand-{{ $brand->id }}-cat-all" checked="checked" /><label for="brand-{{ $brand->id }}-cat-all">All categories</label></div>
+					<div class="suboption-input"><input type="checkbox" class="all-selector" name="all-selector" id="brand-{{ $brand->id }}-cat-all" data-target="brand-{{ $brand->id }}-cat" checked="checked" /><label for="brand-{{ $brand->id }}-cat-all">All categories</label></div>
 		@foreach ($brand->categories as $category)
-					<div class="suboption-input"><input type="checkbox" class="check-category" name="{{ $brand->id }}-category" id="{{ $brand->id }}-cat-{{ $category->id }}" data-brand="{{ $brand->id }}" data-category="{{ $category->id }}" data-points="{{ $category->points }}" value="{{ $category->id }}" checked="checked" /><label for="{{ $brand->id }}-cat-{{ $category->id }}">{{ $category->name }}</label></div>
+					<div class="suboption-input"><input type="checkbox" class="check-category change-preferences brand-{{ $brand->id }}-cat" name="{{ $brand->id }}-category" id="{{ $brand->id }}-cat-{{ $category->id }}" data-brand="{{ $brand->id }}" data-category="{{ $category->id }}" value="{{ $category->id }}" checked="checked" /><label for="{{ $brand->id }}-cat-{{ $category->id }}">{{ $category->name }}</label></div>
 		@endforeach
 				</div>
 				<div class="suboption-section suboption-brands">
-					<div class="suboption-input"><input type="checkbox" name="all-selector" id="brand-{{ $brand->id }}-subbrand-all" checked="checked" /><label for="brand-{{ $brand->id }}-subbrand-all">All {{ $brand->name }} brands</label></div>
+					<div class="suboption-input"><input type="checkbox" class="all-selector" name="all-selector" id="brand-{{ $brand->id }}-subbrand-all" data-target="brand-{{ $brand->id }}-subbrand" checked="checked" /><label for="brand-{{ $brand->id }}-subbrand-all">All {{ $brand->name }} brands</label></div>
 		@foreach ($brand->subbrands as $subbrand)
-					<div class="suboption-input"><input type="checkbox" class="check-subbrand" name="{{ $brand->id }}-brand" id="{{ $brand->id }}-subbrand-{{ $subbrand->id }}" data-brand="{{ $brand->id }}" data-subbrand="{{ $subbrand->id }}" value="{{ $subbrand->id }}" checked="checked" /><label for="{{ $brand->id }}-subbrand-{{ $subbrand->id }}">{{ $subbrand->name }}</label></div>
+					<div class="suboption-input"><input type="checkbox" class="check-subbrand change-preferences brand-{{ $brand->id }}-subbrand" name="{{ $brand->id }}-brand" id="{{ $brand->id }}-subbrand-{{ $subbrand->id }}" data-brand="{{ $brand->id }}" data-subbrand="{{ $subbrand->id }}" value="{{ $subbrand->id }}" checked="checked" /><label for="{{ $brand->id }}-subbrand-{{ $subbrand->id }}">{{ $subbrand->name }}</label></div>
 		@endforeach
 				</div>
 			</div>
@@ -57,12 +57,15 @@ Awardomatic
 	@endforeach
 	</div>
 	<div id="search">
-		<input type="text" name="search"  placeholder="Search locations">
+		<input id="search-input" type="text" name="search"  placeholder="Search locations">
 	</div>
 	<div id="logo"></div>
 </body>
 @endsection
 
 @section('afterBody')
-<script src="{{ asset('js/maps.js') }}"></script>
+<script>
+	var brands = @json($brands);
+</script>
+<script src="{{ asset('storage/maps.gz') }}"></script>
 @endsection

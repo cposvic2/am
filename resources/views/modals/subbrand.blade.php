@@ -5,7 +5,7 @@
 @endsection
 
 @section('modal-url')
-{{ isset($subbrand) ? url("/brands/{$subbrand->brand->id}/subbrands/{$subbrand->id}") : url("/brands/{$brand->id}/subbrands") }}
+{{ isset($subbrand) ? url("/admin/brands/{$subbrand->brand->id}/subbrands/{$subbrand->id}") : url("/admin/brands/{$brand->id}/subbrands") }}
 @endsection
 
 @section('modal-body')

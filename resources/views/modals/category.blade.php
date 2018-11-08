@@ -5,7 +5,7 @@
 @endsection
 
 @section('modal-url')
-{{ isset($category) ? url("/brands/{$category->brand->id}/categories/{$category->id}") : url("/brands/{$brand->id}/categories") }}
+{{ isset($category) ? url("/admin/brands/{$category->brand->id}/categories/{$category->id}") : url("/admin/brands/{$brand->id}/categories") }}
 @endsection
 
 @section('modal-body')

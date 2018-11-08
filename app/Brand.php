@@ -17,4 +17,8 @@ class Brand extends Model
     public function hotels() {
         return $this->hasMany('App\Hotel');
     }
+
+    protected $with = ['subbrands', 'categories'];
+
+    protected $visible = ['id', 'name', 'points_name', 'marker_img', 'subbrands', 'categories'];
 }

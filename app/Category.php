@@ -13,4 +13,6 @@ class Category extends Model
     public function hotels() {
         return $this->hasMany('App\Hotel');
     }
+
+    protected $visible = ['id', 'name', 'points'];
 }
