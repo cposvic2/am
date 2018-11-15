@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.home')
 
 @section('title')
 Awardomatic
@@ -60,12 +60,21 @@ Awardomatic
 		<input id="search-input" type="text" name="search"  placeholder="Search locations">
 	</div>
 	<div id="logo"></div>
-</body>
+	<div class="modal" id="reportModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<h1>Title</h1>
+				<p>This is the content</p>
+			</div>
+		</div>
+	</div>
+	<div class="alert" id="alertModal">
+	</div>
 @endsection
 
 @section('afterBody')
 <script>
 	var brands = @json($brands);
 </script>
-<script src="{{ asset('storage/maps.gz') }}"></script>
+<script src="{{ asset('storage/maps.gz') }}?v={{ $mapVersion }}"></script>
 @endsection

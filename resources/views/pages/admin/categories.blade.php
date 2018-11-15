@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title')
-Hotels
+Categories
 @endsection
 
 @section('head')

@@ -17,12 +17,13 @@ class CreateHotelsTable extends Migration
             $table->increments('id');
             $table->text('name');
             $table->text('address');
-            $table->double('latitude');
-            $table->double('longitude');
+            $table->double('latitude')->nullable();
+            $table->double('longitude')->nullable();
             $table->text('link');
             $table->integer('brand_id');
             $table->integer('subbrand_id');
             $table->integer('category_id');
+            $table->boolean('display')->default(true);
             $table->integer('old_id')->nullable();
             $table->timestamps();
         });

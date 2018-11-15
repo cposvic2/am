@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Hotel;
 use App\Brand;
+use App\HotelRequestIssue;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
@@ -12,9 +13,10 @@ class HotelController extends Controller
 {
     public function report($id)
     {
+        $issue = new HotelRequestIssue;
         $hotel = Hotel::findOrFail($id);
         $brands = Brand::all();
-        return view('pages.report', compact('brands', 'hotel'));
+        return view('pages.report', compact('brands', 'hotel', 'issue'));
     }
 
     public function infobox($id)
@@ -103,9 +105,10 @@ class HotelController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Hotel $hotel)
     {
-        //
+        $brands = Brand::all();
+        return view('pages.admin.hotel', compact('hotel', 'brands'));
     }
 
     /**
@@ -117,10 +120,7 @@ class HotelController extends Controller
     public function edit(Hotel $hotel)
     {
         $brands = Brand::all();
-        return response()->json([
-            'success' => true,
-            'view' => view('modals.hotel', compact('brands', 'hotel'))->render(),
-        ]);
+        return view('pages.admin.hotel', compact('hotel', 'brands'));
     }
 
     /**
@@ -139,6 +139,7 @@ class HotelController extends Controller
         $hotel->name = $request->input('name');
         $hotel->address = $request->input('address');
         $hotel->link = $request->input('link');
+        $hotel->display = $request->input('display') ? true : false;
 
         $hotel->latitude = $request->input('latitude');
         $hotel->longitude = $request->input('longitude');

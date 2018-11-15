@@ -15,6 +15,17 @@ class CreateHotelRequestsTable extends Migration
     {
         Schema::create('hotel_requests', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('hotel_id');
+            $table->integer('brand_id')->nullable();
+            $table->integer('subbrand_id')->nullable();
+            $table->integer('category_id')->nullable();
+            $table->integer('points')->nullable();
+            $table->text('name')->nullable();
+            $table->text('address')->nullable();
+            $table->double('latitude')->nullable();
+            $table->double('longitude')->nullable();
+            $table->text('link')->nullable();
+            $table->boolean('completed')->default(false);
             $table->timestamps();
         });
     }

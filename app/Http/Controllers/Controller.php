@@ -19,7 +19,18 @@ class Controller extends BaseController
     public function home()
     {
         $brands = Brand::orderBy('order')->get();
-        return view('pages.home', compact('brands'));
+        $mapVersion = md5(Storage::disk('public')->lastModified('maps.gz'));
+        return view('pages.home', compact('brands', 'mapVersion'));
+    }
+
+    public function login()
+    {
+        return view('pages.admin.login');
+    }
+
+    public function loginSubmit(Request $request)
+    {
+        return redirect(url("/admin"))->withSuccess("Welcome back");
     }
 
     public function regenerate()
@@ -36,7 +47,9 @@ class Controller extends BaseController
     				$subbrandOutput = array();
 					$hotels = Hotel::where(['subbrand_id' => $subbrand->id, 'category_id' => $category->id])->get();
 					foreach ($hotels as $hotel) {
-						$subbrandOutput[] = array($hotel->id, $hotel->latitude, $hotel->longitude);
+                        if ($hotel->display && $hotel->latitude && $hotel->longitude) {
+                            $subbrandOutput[] = array($hotel->id, $hotel->latitude, $hotel->longitude);
+                        }
 					}
     				$categoryOutput[$subbrand->id] = $subbrandOutput;
     			}

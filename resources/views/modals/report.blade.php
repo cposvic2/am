@@ -1,19 +1,5 @@
-@extends('layouts.app')
-
-@section('title')
-Report A Problem
-@endsection
-
-@section('head')
-	<link rel="stylesheet" href="{{ asset('css/report.css') }}" rel="stylesheet" />
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyAkJsq7Ax0jlg8FVJrMYDUaNsmOJi0_wTo"></script>
-	<script src="{{ asset('js/report.js') }}"></script>
-@endsection
-
-@section('body')
 <div id="problemReport">
-    <form method="post" action="{{ url("report/{$hotel->id}/submit") }}">
+    <form method="post" class="reportForm" action="{{ url("ajax/report/{$hotel->id}/submit") }}">
         <h2>Suggest changes for {{ $hotel->name }}</h2>
         <p>Is something not right? Please give us as much information you can on what's wrong.</p>
 @foreach ($issue->types as $type)
@@ -64,13 +50,13 @@ Report A Problem
             <label for="brand">Brand</label>
             <select name="brand">
     @foreach ($brands as $brand)
-                <option value="{{ $brand->id }}"{{ $brand->id == $hotel->brand_id ? 'selected="selected"' : '' }} />{{ $brand->name }}</option>
+                <option value="{{ $brand->id }}"{{ $brand->id == $hotel->brand_id ? 'selected="selected"' : '' }}>{{ $brand->name }}</option>
     @endforeach
             </select>
             <label for="subbrand">Sub-brand</label>
             <select name="subbrand">
     @foreach ($hotel->brand->subbrands as $subbrand)
-                <option value="{{ $subbrand->id }}"{{ $subbrand->id == $hotel->subbrand_id ? 'selected="selected"' : '' }} />{{ $subbrand->name }}</option>
+                <option value="{{ $subbrand->id }}"{{ $subbrand->id == $hotel->subbrand_id ? 'selected="selected"' : '' }}>{{ $subbrand->name }}</option>
     @endforeach
             </select>
         </div>
@@ -82,7 +68,7 @@ Report A Problem
        		<div class="property-header">Category &amp; Points</div>
     		<select name="category">
     @foreach ($hotel->brand->categories as $category)
-    			<option value="{{ $category->id }}"{{ $category->id == $hotel->category_id ? 'selected="selected"' : '' }} />{{ $category->name }}</option>
+    			<option value="{{ $category->id }}"{{ $category->id == $hotel->category_id ? 'selected="selected"' : '' }}>{{ $category->name }}</option>
     @endforeach
     		</select>
             <label for="points">Points</label>
@@ -91,7 +77,8 @@ Report A Problem
         
         <div class="submit-container">
             <div id="submit-status"></div>
-        	<button class="btn-submit btn" id="submit">Submit</buttom><button class="btn-cancel btn" id="cancel">Cancel</buttom>
+        	<button class="btn-submit btn" id="submit">Submit</buttom>
+            <button type="button" class="btn-cancel btn" id="cancel">Cancel</buttom>
         </div>
         <input type="hidden" id="latitude" value="" />
         <input type="hidden" id="longitude" value="" />
@@ -99,13 +86,9 @@ Report A Problem
         @method('POST')
     </form>  
 </div>
-@endsection
-
-@section('afterBody')
 <script>
     var hotel = {
         lat: {{ $hotel->latitude }},
         lng: {{ $hotel->longitude }},
     };
 </script>
-@endsection

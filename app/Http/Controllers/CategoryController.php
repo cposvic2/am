@@ -15,7 +15,7 @@ class CategoryController extends Controller
      */
     public function index(Brand $brand)
     {
-        $categories = Category::where('brand_id', $brand->id)->get();
+        $categories = Category::where('brand_id', $brand->id)->orderBy('order')->get();
         return view('pages.admin.categories',  compact('categories', 'brand'));
     }
 
@@ -47,7 +47,16 @@ class CategoryController extends Controller
         $category->order = $request->input('order');
         $category->points = $request->input('points');
         $category->save();
-
+        $categories = Category::where([['brand_id', '=', $brand->id],['id', '<>', $category->id]])->get();
+        $i = 1;
+        foreach ($categories as $otherCategory) {
+            if ($category->order == $i) {
+                $i++;
+            }
+            $otherCategory->order = $i;
+            $otherCategory->save();
+            $i++;
+        }
         return redirect(url("/admin/brands/{$brand->id}/categories"))->withSuccess($category->name." has been added successfully");
     }
 
@@ -90,7 +99,16 @@ class CategoryController extends Controller
         $category->order = $request->input('order');
         $category->points = $request->input('points');
         $category->save();
-
+        $categories = Category::where([['brand_id', '=', $brand->id],['id', '<>', $category->id]])->get();
+        $i = 1;
+        foreach ($categories as $otherCategory) {
+            if ($category->order == $i) {
+                $i++;
+            }
+            $otherCategory->order = $i;
+            $otherCategory->save();
+            $i++;
+        }
         return redirect(url("/admin/brands/{$brand->id}/categories"))->withSuccess($category->name." has been updated successfully");
     }
 

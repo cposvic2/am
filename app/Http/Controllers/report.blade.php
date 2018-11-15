@@ -16,6 +16,12 @@ Report A Problem
     <form method="post" action="{{ url("report/{$hotel->id}/submit") }}">
         <h2>Suggest changes for {{ $hotel->name }}</h2>
         <p>Is something not right? Please give us as much information you can on what's wrong.</p>
+        <div class="comment-checkbox-container">
+            <label><input type="checkbox" name="bne-check" class="comment-checkbox" data-target="#expand-bne" value="1" />This property doesn't exist</label>
+            <div class="comment-box-container" id="expand-bne">
+                <textarea class="comment-box" name="bne-text" placeholder="Please tell us if this property was closed and, if applicable, the name of the property currently at this location. If this property has moved, please tell us the new location." rows="3"></textarea>
+            </div>
+        </div>
 @foreach ($issue->types as $type)
         <div class="comment-checkbox-container">
             <label><input type="checkbox" name="{{ $type }}-check" class="comment-checkbox" data-target="#expand-{{ $type }}" value="1">{{ $issue->descriptions[$type] }}</label>

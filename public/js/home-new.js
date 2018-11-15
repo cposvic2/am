@@ -69,10 +69,10 @@ $(document).ready(function() {
 	var customMapType = new google.maps.StyledMapType(featureOpts, styledMapOptions);
 	map.mapTypes.set(MY_MAPTYPE_ID, customMapType);
 
-	InitializeMarkers();
+	initializeMarkers();
 
 	google.maps.event.addListener(map, 'idle', function(){
-		UpdatePositions();
+		updatePositions();
 	});
 
 	google.maps.event.addListener(map, "click", function(){
@@ -122,6 +122,12 @@ $(document).ready(function() {
 		$('#points-slider, #hotel-brand').toggleClass( "expanded" );
 	});
 
+	$(".modal").on('click', function(e) {
+		if (e.target !== this)
+			return;
+		$(this).removeClass( "show" );
+	});
+
 	$("#search input").click(function () {	
 		if (typeof ga == 'function') { 
 			ga('send', 'event', 'Awardomatic', 'Search Used');
@@ -155,7 +161,7 @@ $(document).ready(function() {
 	});
 });
 
-function InitializeMarkers() {
+function initializeMarkers() {
 
 	for (var brand_id in hotel_list) {
 		var brand = brands.find(x => x.id == brand_id);
@@ -169,7 +175,7 @@ function InitializeMarkers() {
 					if (!!category) {
 						points = category.points;
 					}
-					CreateMarker({
+					createMarker({
 						'id': hotel_list[brand_id][category_id][subbrand_id][i][0],
 						'lat': hotel_list[brand_id][category_id][subbrand_id][i][1],
 						'long': hotel_list[brand_id][category_id][subbrand_id][i][2],
@@ -186,7 +192,7 @@ function InitializeMarkers() {
 	hotel_list = null;
 }
 
-function CreateMarker(attrs) {
+function createMarker(attrs) {
 	var i = markers.length;
 	markers[i] = (new google.maps.Marker({
 		position: new google.maps.LatLng(attrs['lat'], attrs['long']),
@@ -207,29 +213,13 @@ function CreateMarker(attrs) {
 	}));
 	
 	google.maps.event.addListener(markers[i], 'click', function() {
-		MarkerClick(markers[i]);
+		markerClick(markers[i]);
 	});
 }
 
-function MarkerClick(marker) {
-	var id = marker.id;
-	$.ajax({
-		url: "infobox/"+id,
-		dataType: 'json',
-		timeout: 0,
-		error: function(jqXHR, textStatus, errorThrown) {
-			console.log(textStatus);
-		}
-	})
-	.done(function( json ) {
-		if (json["success"]) {
-			infowindow.setContent(json["view"]);
-			infowindow.open(map,marker);
-		}
-	});
-}
 
-function UpdatePositions() {
+
+function updatePositions() {
 	//var start = new Date().getTime();
 	var i = markers.length;
 	while (i--) {
@@ -239,7 +229,7 @@ function UpdatePositions() {
 			}			
 		} else {
 			if ( markers[i].getMap() ) {
-				RemoveMarker(markers[i]);
+				removeMarker(markers[i]);
 			}
 		}
 	}
@@ -256,14 +246,14 @@ function UpdatePositions() {
 
 function AddMarker(marker) {
 	marker.setMap(map);
-	CheckMarkerVisibility(marker);
+	checkMarkerVisibility(marker);
 }
 
-function RemoveMarker(marker) {
+function removeMarker(marker) {
 	marker.setMap(null);
 }
 
-function CheckMarkerVisibility(marker) {
+function checkMarkerVisibility(marker) {
 	shouldBeVisible = false;
 	brand_id = marker.brand_id;
 	subbrand_id = marker.subbrand_id;
@@ -313,6 +303,98 @@ function preferencesChanged() {
 function displayChecks() {
 	var i = markers.length;
 	while (i--) {
-		CheckMarkerVisibility(markers[i]);
+		checkMarkerVisibility(markers[i]);
 	}
+}
+
+function reportClick(e, id) {
+	e.preventDefault();
+	$modal = $('.modal');
+	$.ajax({
+		url: "ajax/report/"+id,
+		dataType: 'json',
+		success : function( json ) {
+			if (json["success"]) {
+				$modal.addClass("show").find('.modal-content').html(json["view"]);
+				reportLoad();
+			}
+        },
+	});
+}
+
+function markerClick(marker) {
+	var id = marker.id;
+	$.ajax({
+		url: "infobox/"+id,
+		dataType: 'json',
+		timeout: 0,
+		error: function(jqXHR, textStatus, errorThrown) {
+			console.log(textStatus);
+		},
+		success : function( json ) {
+			if (json["success"]) {
+				infowindow.setContent(json["view"]);
+				infowindow.open(map,marker);
+			}
+        },
+	})
+}
+
+function reportLoad() {
+	$(".comment-checkbox").click(function () {
+		var target = $(this).data("target");
+		$(target).slideToggle(250);
+	});
+
+	$("#cancel").click(function () {
+		$(".modal").removeClass( "show" );
+	});
+
+	$(".property-container").click(function () {
+		var target = $(this).data("target");
+		$(this).addClass("hidden");
+		$(target).removeClass("hidden");
+	});
+
+	var ReportMapOptions = {
+		disableDefaultUI: true,
+		mapTypeControl: true,
+		zoomControl: true,
+		zoomControlOptions: {
+    		style:google.maps.ZoomControlStyle.SMALL,
+		},
+		mapTypeId:google.maps.MapTypeId.ROADMAP
+	};
+
+	ReportMap = new google.maps.Map(document.getElementById('problemReport-marker-map'), ReportMapOptions);
+	var bounds = new google.maps.LatLngBounds();
+
+	var reportmarkerpoint = new google.maps.LatLng(hotel["lat"],hotel["lng"]);
+	ReportMarker = new google.maps.Marker({
+		position: reportmarkerpoint,
+		map: ReportMap,
+		draggable: true,
+	});
+	google.maps.event.addListener(ReportMarker, "dragend", function(event) {
+		$('input#latitude').val( event.latLng.lat() );
+		$('input#longitude').val( event.latLng.lng() );
+	}); 
+	ReportMap.setCenter(reportmarkerpoint);
+	ReportMap.setZoom(16);
+
+	$('.reportForm').submit(function() { 
+		$.ajax({
+            url     : $(this).attr('action'),
+            type    : $(this).attr('method'),
+            dataType: 'json',
+            data    : $(this).serialize(),
+            success : function( json ) {
+				if (json["success"]) {
+					$(".modal").removeClass("show");
+					$("#alertModal").html(json["view"]);
+				}
+            },
+		});
+		return false;
+	});
 }

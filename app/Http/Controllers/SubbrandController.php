@@ -15,7 +15,7 @@ class SubbrandController extends Controller
      */
     public function index(Brand $brand)
     {
-        $subbrands = Subbrand::where('brand_id', $brand->id)->get();
+        $subbrands = Subbrand::where('brand_id', $brand->id)->orderBy('order')->get();
         return view('pages.admin.subbrands', compact('subbrands', 'brand'));
     }
 
@@ -46,7 +46,16 @@ class SubbrandController extends Controller
         $subbrand->name = $request->input('name');
         $subbrand->order = $request->input('order');
         $subbrand->save();
-
+        $subbrands = Subbrand::where([['brand_id', '=', $brand->id],['id', '<>', $subbrand->id]])->get();
+        $i = 1;
+        foreach ($subbrands as $otherSubbrand) {
+            if ($subbrand->order == $i) {
+                $i++;
+            }
+            $otherSubbrand->order = $i;
+            $otherSubbrand->save();
+            $i++;
+        }
         return redirect(url("/admin/brands/{$brand->id}/subbrands"))->withSuccess($subbrand->name." has been added successfully");
     }
 
@@ -88,7 +97,16 @@ class SubbrandController extends Controller
         $subbrand->name = $request->input('name');
         $subbrand->order = $request->input('order');
         $subbrand->save();
-
+        $subbrands = Subbrand::where([['brand_id', '=', $brand->id],['id', '<>', $subbrand->id]])->orderBy('order')->get();
+        $i = 1;
+        foreach ($subbrands as $otherSubbrand) {
+            if ($subbrand->order == $i) {
+                $i++;
+            }
+            $otherSubbrand->order = $i;
+            $otherSubbrand->save();
+            $i++;
+        }
         return redirect(url("/admin/brands/{$brand->id}/subbrands"))->withSuccess($subbrand->name." has been updated successfully");
     }
 

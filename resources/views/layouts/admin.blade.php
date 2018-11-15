@@ -1,18 +1,14 @@
-<!DOCTYPE html>
-<html lang="en-US">
+@extends('layouts.bootstrap')
 
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<title>@yield('title')</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+@section('bsTitle')
+@yield('title')
+@endsection
+
+@section('bsHead')
     @yield('head')
-</head>
-<body>
+@endsection
 
+@section('bsNavigation')
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 		<a class="navbar-brand" href="{{ url("/") }}">Awardomatic Admin Panel</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,36 +22,18 @@
 				<li class="nav-item{{ ( Request::path() == 'admin/brands' ? " active" : "") }}">
 					<a class="nav-link" href="{{ url("admin/brands") }}">Brands</a>
 				</li>
+				<li class="nav-item{{ ( Request::path() == 'admin/requests' ? " active" : "") }}">
+					<a class="nav-link" href="{{ url("admin/requests") }}">Requests</a>
+				</li>
 			</ul>
 		</div>
 	</nav>
+@endsection
 
-	<div id="content" class="container py-3">
-@if (Session::has('success'))
-    	<div class="alert alert-success alert-dismissible fade show" role="alert">
-    		{{ Session::get('success') }}
-    		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
-    	</div>
-@endif
-@if ($errors->any())
-		<div class="alert alert-danger alert-dismissible fade show" role="alert">
-			<p>Your information was not submitted for the following reasons:</p>
-		    <ul>
-		        @foreach ($errors->all() as $error)
-		            <li>{{ $error }}</li>
-		        @endforeach
-		    </ul>
-		    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
-		</div>
-@endif
+@section('bsContent')
 @yield('content')
-	</div>
-</body>
-<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
-<script src="{{ asset('js/bootstrap/bootstrap.bundle.js') }}"></script>
+@endsection
+
+@section('bsAfterBody')
 @yield('afterBody')
-</html>
+@endsection

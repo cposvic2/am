@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title')
-Hotels
+Subbrands
 @endsection
 
 @section('head')

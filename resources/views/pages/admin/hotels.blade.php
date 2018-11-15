@@ -37,6 +37,14 @@ Hotels
 				    </select>
 				</div>
 			</div>
+			<div class="form-group form-check">
+				<input type="checkbox" class="form-check-input" name="nolatlng" id="nolatlng" />
+				<label class="form-check-label" for="nolatlng">Only show hotels missing coordinates</label>
+			</div>
+			<div class="form-group form-check">
+				<input type="checkbox" class="form-check-input" name="nobrand" id="nobrand" />
+				<label class="form-check-label" for="nobrand">Only show hotels missing a valid brand/subbrand/category</label>
+			</div>
 			<button type="submit" class="btn btn-primary">Search</button>
 		</form>
 	</div>
@@ -64,7 +72,7 @@ Hotels
 				<td>{{ $hotel->subbrand->name }}</td>
 				<td>{{ $hotel->category->name }}</td>
 				<td>{{ $hotel->category->points }}</td>
-				<td><button type="button" class="btn btn-secondary hotel-modal-btn" data-target="#hotelUpdateModal" data-hotel="{{ $hotel->id }}">Edit</button></td>
+				<td><a href="{{ url("/admin/hotels/{$hotel->id}/edit") }}" role="button" class="btn btn-secondary hotel-modal-btn">Edit</a></td>
 			</tr>
 @endforeach
 		</tbody>
@@ -82,34 +90,7 @@ Hotels
 		</div>
 	</div>
 </div>
-
-<div class="modal fade" id="hotelUpdateModal" tabindex="-1" role="dialog">
-	<div class="modal-dialog modal-dialog-centered" role="document">
-		<div class="modal-content">
-		</div>
-	</div>
-</div>
 @endsection
 
 @section('afterBody')
-<script type="text/javascript">
-	
-$('.hotel-modal-btn').on("click", function () {
-	var $button = $(this);
-	var modal = $button.data('target');
-	var $modal = $(modal);
-	var hotel = $button.data('hotel');
-
-   $.ajax({
-		url: '{{ url("/admin/hotels") }}/'+hotel+"/edit",
-		method: 'get',
-		success: function(result){
-			$modal.find('.modal-content').html(result['view']);
-			$modal.modal('show');
-		},
-	});
-
-});
-
-</script>
 @endsection

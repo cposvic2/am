@@ -839,6 +839,7 @@ class DatabaseSeeder extends Seeder
                     'brand_id'  => $brand->id,
                     'subbrand_id'  => $subbrand->id,
                     'category_id'  => $category->id,
+                    'display'  => true,
                 ));
                 if (!(++$i % 500)) {
                     $this->command->info($i.' hotels created');
